@@ -1,6 +1,8 @@
 # Model arguments
-model_name_or_path: vain05/stablelm-2-1_6b-sft-qlora
+model_name_or_path: /home/duydt2/.cache/huggingface/hub/models--stabilityai--stablelm-2-zephyr-1_6b/snapshots/fa88b77407a25955940216c710153376b6d350f5/
+trust_remote_code: true
 torch_dtype: float16
+ddp_find_unused_parameters: false
 
 # LoRA arguments
 use_peft: true
@@ -20,7 +22,7 @@ lora_target_modules:
 # Data training arguments
 
 dataset_mixer:
-  HuggingFaceH4/ultrafeedback_binarized: 1.0
+  allenai/ultrafeedback_binarized_cleaned: 1.0
 dataset_splits:
 - train_prefs
 - test_prefs
@@ -29,6 +31,7 @@ preprocessing_num_workers: 8
 # DPOTrainer arguments
 bf16: true
 beta: 0.01
+loss_type: sigmoid
 do_eval: true
 evaluation_strategy: steps
 eval_steps: 100
@@ -37,6 +40,7 @@ gradient_checkpointing: true
 gradient_checkpointing_kwargs:
   use_reentrant: false
 hub_model_id: stablelm-2-1_6b-dpo-qlora
+
 learning_rate: 5.0e-6
 log_level: info
 logging_steps: 10
