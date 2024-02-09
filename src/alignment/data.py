@@ -75,9 +75,9 @@ def apply_chat_template(
             # Now we extract the final turn to define chosen/rejected responses
             chosen_messages = example["chosen"][-1:]
             rejected_messages = example["rejected"][-1:]
-            example["text_chosen"] = tokenizer.apply_chat_template(chosen_messages, tokenize=False)
-            example["text_rejected"] = tokenizer.apply_chat_template(rejected_messages, tokenize=False)
-            example["text_prompt"] = tokenizer.apply_chat_template(prompt_messages, tokenize=False)
+            example["text_chosen"] = tokenizer.apply_chat_template(chosen_messages, chat_template=DEFAULT_CHAT_TEMPLATE, tokenize=False)
+            example["text_rejected"] = tokenizer.apply_chat_template(rejected_messages, chat_template=DEFAULT_CHAT_TEMPLATE, tokenize=False)
+            example["text_prompt"] = tokenizer.apply_chat_template(prompt_messages, chat_template=DEFAULT_CHAT_TEMPLATE, tokenize=False)
         else:
             raise ValueError(
                 f"Could not format example as dialogue for `dpo` task! Require `[chosen, rejected]` keys but found {list(example.keys())}"
