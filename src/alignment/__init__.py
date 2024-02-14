@@ -10,3 +10,4 @@ from .model_utils import (
     get_tokenizer,
     is_adapter_model,
 )
+from .paired_trainer import PairedTrainer

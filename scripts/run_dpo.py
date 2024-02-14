@@ -34,9 +34,9 @@ from alignment import (
     get_quantization_config,
     get_tokenizer,
     is_adapter_model,
+    PairedTrainer
 )
 from peft import PeftConfig, PeftModel
-from trl import DPOTrainer
 
 
 logger = logging.getLogger(__name__)
@@ -160,7 +160,7 @@ def main():
     #########################
     # Instantiate DPO trainer
     #########################
-    trainer = DPOTrainer(
+    trainer = PairedTrainer(
         model,
         ref_model,
         model_init_kwargs=model_kwargs,
