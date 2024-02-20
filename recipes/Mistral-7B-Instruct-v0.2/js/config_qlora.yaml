@@ -30,8 +30,8 @@ preprocessing_num_workers: 8
 
 # DPOTrainer arguments
 bf16: true
-beta: 0.6
-loss_type: sigmoid
+beta: 0.01
+loss_type: kto_js
 do_eval: true
 evaluation_strategy: steps
 eval_steps: 100
@@ -41,7 +41,7 @@ gradient_checkpointing_kwargs:
   use_reentrant: false
 hub_model_id: Mistral-7B-Instruct-v0.2-dpo-qlora
 
-learning_rate: 5.0e-7
+learning_rate: 5.0e-6
 log_level: info
 logging_steps: 10
 lr_scheduler_type: cosine

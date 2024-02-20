@@ -1,28 +1,11 @@
 # Model arguments
 model_name_or_path: mistralai/Mistral-7B-Instruct-v0.2
-trust_remote_code: true
-torch_dtype: float16
-ddp_find_unused_parameters: false
-
-# LoRA arguments
-use_peft: true
-load_in_4bit: true
-lora_r: 16
-lora_alpha: 16
-lora_dropout: 0.05
-lora_target_modules:
-- q_proj
-- k_proj
-- v_proj
-- o_proj
-- gate_proj
-- up_proj
-- down_proj
+torch_dtype: null
 
 # Data training arguments
-
+# For definitions, see: src/h4/training/config.py
 dataset_mixer:
-  allenai/ultrafeedback_binarized_cleaned: 1.0
+  mistralai/Mistral-7B-Instruct-v0.2: 1.0
 dataset_splits:
 - train_prefs
 - test_prefs
@@ -30,8 +13,7 @@ preprocessing_num_workers: 8
 
 # DPOTrainer arguments
 bf16: true
-beta: 0.6
-loss_type: sigmoid
+beta: 0.01
 do_eval: true
 evaluation_strategy: steps
 eval_steps: 100
@@ -39,8 +21,7 @@ gradient_accumulation_steps: 2
 gradient_checkpointing: true
 gradient_checkpointing_kwargs:
   use_reentrant: false
-hub_model_id: Mistral-7B-Instruct-v0.2-dpo-qlora
-
+hub_model_id: Mistral-7B-Instruct-v0.2-dpo-full
 learning_rate: 5.0e-7
 log_level: info
 logging_steps: 10
@@ -48,9 +29,9 @@ lr_scheduler_type: cosine
 max_length: 1024
 max_prompt_length: 512
 num_train_epochs: 1
-optim: paged_adamw_32bit
-output_dir: data/Mistral-7B-Instruct-v0.2-dpo-qlora # It is handy to append `hub_model_revision` to keep track of your local experiments
-per_device_train_batch_size: 4
+optim: adamw_torch
+output_dir: data/Mistral-7B-Instruct-v0.2-dpo-full
+per_device_train_batch_size: 8
 per_device_eval_batch_size: 8
 push_to_hub: true
 report_to:
