@@ -27,6 +27,7 @@ from alignment import (
     H4ArgumentParser,
     ModelArguments,
     apply_chat_template,
+    decontaminate_humaneval,
     get_checkpoint,
     get_datasets,
     get_kbit_device_map,
@@ -101,6 +102,23 @@ def main():
         num_proc=data_args.preprocessing_num_workers,
         remove_columns=column_names,
         desc="Formatting comparisons with prompt template",
+    )
+
+    ##########################
+    # Decontaminate benchmarks
+    ##########################
+    num_raw_train_samples = len(raw_datasets["train"])
+    raw_datasets = raw_datasets.filter(
+        decontaminate_humaneval,
+        fn_kwargs={"text_column": "text_chosen"},
+        batched=True,
+        batch_size=10_000,
+        num_proc=1,
+        desc="Decontaminating HumanEval samples",
+    )
+    num_filtered_train_samples = num_raw_train_samples - len(raw_datasets["train"])
+    logger.info(
+        f"Decontaminated {num_filtered_train_samples} ({num_filtered_train_samples/num_raw_train_samples * 100:.2f}%) samples from the training set."
     )
 
     # Replace column names with what TRL needs, text_chosen -> chosen and text_rejected -> rejected
@@ -197,16 +215,6 @@ def main():
 
     logger.info("*** Training complete ***")
 
-    ##########
-    # Evaluate
-    ##########
-    if training_args.do_eval:
-        logger.info("*** Evaluate ***")
-        metrics = trainer.evaluate()
-        metrics["eval_samples"] = len(raw_datasets["test"])
-        trainer.log_metrics("eval", metrics)
-        trainer.save_metrics("eval", metrics)
-
     ##################################
     # Save model and create model card
     ##################################
@@ -226,6 +234,16 @@ def main():
         # Restore k,v cache for fast inference
         trainer.model.config.use_cache = True
         trainer.model.config.save_pretrained(training_args.output_dir)
+
+    ##########
+    # Evaluate
+    ##########
+    if training_args.do_eval:
+        logger.info("*** Evaluate ***")
+        metrics = trainer.evaluate()
+        metrics["eval_samples"] = len(raw_datasets["test"])
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
 
     if training_args.push_to_hub is True:
         logger.info("Pushing to hub...")
